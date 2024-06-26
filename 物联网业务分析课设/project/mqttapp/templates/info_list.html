@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用户信息</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 50px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>用户信息</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>名字</th>
+                <th>密码</th>
+                <th>年龄</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <a href="/info/add">添加用户</a>
+        <tbody>
+            {% for user_info in data_list %}
+            <tr>
+                <td>{{ user_info.id }}</td>
+                <td>{{ user_info.name }}</td>
+                <td>{{ user_info.password }}</td>
+                <td>{{ user_info.age }}</td>
+                <td>
+                    <a href="http://127.0.0.1:8000/info/delete?nid={{ user_info.id }}">删除</a>
+                </td>
+            </tr
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

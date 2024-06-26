@@ -17,6 +17,30 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from mqttapp import views
+
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    # path("admin/", admin.site.urls),
+    path('index/',views.index),
+    path('user/list/',views.user_list),
+    path('user/add/',views.user_add),
+
+    path('login/',views.login),
+
+
+    # path('orm/',views.orm),
+
+    #用户列表
+    path('info/list',views.info_list),
+    #添加用户
+    path('info/add',views.info_add),
+    #删除用户
+    path('info/delete',views.info_delete),
+    
+
+
+    #数据
+    path('sensor_data/', views.sensor_data),
+    path('mqtt_publish/', views.mqtt_publish, name='mqtt_publish'),
+
 ]

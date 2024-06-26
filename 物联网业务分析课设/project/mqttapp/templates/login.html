@@ -1,0 +1,70 @@
+
+
+<html>
+<head>
+	<title>身份认证 </title>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+
+	<style>
+		.jingshi {
+			font-size: 18px;
+			width: 351px;
+			margin: 0 auto;
+			border: 1px solid #f5f5f5;
+			color: #f33a11;
+			border-radius: 4px;
+			padding: 10px;
+			font-weight: 700;
+		}
+		.focus {
+			font-size: 15px;
+			color: red;
+		}
+		.focus p {
+			font-size: 15px;
+			color: red;
+		}
+		.redBorder {
+			    font-size: 22px;
+				color: red;
+				border: 1px solid red;
+				padding: 24px;
+				display: inline-block;
+		}
+	</style>
+</head>
+<script>
+
+</script>
+<body  text="#000000" topmargin="0" leftmargin="0">
+	<div align="center">
+		<form  method="post" action="/login/">
+
+            {% csrf_token %}
+
+			<br>	
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<div class="jingshi">
+				查阅自己邮箱查看登录方法，并及时更改密码！
+			</div>			
+			
+			<div><font size="2" color="#006666">学号：</font><input name="username" id="username" type="text" size="15" class="notnull" onkeypress="goNext()" ></div>
+			<div><font size="2" color="#006666">密码：</font><input name="password" id="password" type="password" size="15" class="notnull" onkeypress="Check_Nums()" ></div>
+			<div><input type="submit" id="Submit" name="Submit" value=" 登  录 " class="button" onclick="loginwithpwd();" onmouseover="this.style.color='red'" onmouseout="this.style.color='#1e7977'"><input type="button" id="Submit2" name="Submit2"  value=" 重  写 " class="button" onclick="resetWin();" onmouseover="this.style.color='red'" onmouseout="this.style.color='#1e7977'"></div>
+            <span style="color: red;"/> {{error_msg}}</span>
+            
+		</form>
+		<br>
+		<h2 class="redBorder">信息管理系统密码忘记，可通过<a style="font-size:22px;color:#669999;" 
+			<br><br>
+			请联系管理员找回。
+			<br><br>
+			(ps:忘记密码,请联系管理员iot 电话号码:18212345679 找回)
+			</h2>
+			<br>
+</body>
+</html>

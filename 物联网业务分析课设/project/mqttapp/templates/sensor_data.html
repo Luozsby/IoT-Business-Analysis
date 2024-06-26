@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>传感器数据</title>
+    <script>
+        function publishMessage(message) {
+            fetch('/mqtt_publish/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ 'topic': '0159', 'message': message })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert(data.message);  // 处理成功后的提示
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>传感器数据</h1>
+    <table border="1">
+        <tr>
+            <th>时间</th>
+            <th>温度</th>
+            <th>湿度</th>
+        </tr>
+        {% for entry in data %}
+        <tr>
+            <td>{{ entry.timestamp|date:"Y 年 m 月 d 日 H:i:s" }}</td>
+            <td>{{ entry.temperature }}</td>
+            <td>{{ entry.humidity }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <button onclick="publishMessage('on')">开</button>
+    <button onclick="publishMessage('off')">关</button>
+</body>
+</html>
