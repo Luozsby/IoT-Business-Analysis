@@ -2,6 +2,75 @@
 <html>
 <head>
     <title>传感器数据</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .button-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .button-container button {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+        }
+
+        .button-on {
+            background-color: #4CAF50;
+        }
+
+        .button-off {
+            background-color: #f44336;
+        }
+
+        .button-on:hover, .button-off:hover {
+            opacity: 0.8;
+        }
+
+        canvas {
+            display: block;
+            margin: 20px auto;
+            width: 80%;
+            max-width: 800px;
+        }
+    </style>
     <script>
         function publishMessage(message) {
             fetch('/mqtt_publish/', {
@@ -25,25 +94,99 @@
                 console.error('Error:', error);
             });
         }
+
+        function fetchData() {
+            fetch('/get_sensor_data/')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('sensor-data');
+                tableBody.innerHTML = '';
+                data.forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(entry.timestamp).toLocaleString()}</td>
+                        <td>${entry.temperature} °C</td>
+                        <td>${entry.humidity} %</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching sensor data:', error));
+        }
+
+        function generateLineChart() {
+            fetch('/get_all_sensor_data/')
+            .then(response => response.json())
+            .then(data => {
+                const labels = data.map(entry => new Date(entry.timestamp).toLocaleString());
+                const temperatures = data.map(entry => entry.temperature);
+                const humidities = data.map(entry => entry.humidity);
+
+                const ctx = document.getElementById('line-chart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '温度 (°C)',
+                            borderColor: 'rgb(255, 99, 132)',
+                            data: temperatures,
+                            fill: false
+                        }, {
+                            label: '湿度 (%)',
+                            borderColor: 'rgb(54, 162, 235)',
+                            data: humidities,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '时间'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '数值'
+                                }
+                            }]
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching sensor data:', error));
+        }
+
+        setInterval(fetchData, 2000);  // 每2秒刷新一次数据
+        document.addEventListener('DOMContentLoaded', fetchData);
     </script>
 </head>
 <body>
     <h1>传感器数据</h1>
-    <table border="1">
-        <tr>
-            <th>时间</th>
-            <th>温度</th>
-            <th>湿度</th>
-        </tr>
-        {% for entry in data %}
-        <tr>
-            <td>{{ entry.timestamp|date:"Y 年 m 月 d 日 H:i:s" }}</td>
-            <td>{{ entry.temperature }}</td>
-            <td>{{ entry.humidity }}</td>
-        </tr>
-        {% endfor %}
+    <table>
+        <thead>
+            <tr>
+                <th>时间</th>
+                <th>温度</th>
+                <th>湿度</th>
+            </tr>
+        </thead>
+        <tbody id="sensor-data">
+            <!-- 传感器数据将由JavaScript动态填充 -->
+        </tbody>
     </table>
-    <button onclick="publishMessage('on')">开</button>
-    <button onclick="publishMessage('off')">关</button>
+    <div class="button-container">
+        <button class="button-on" onclick="publishMessage('on')">开</button>
+        <button class="button-off" onclick="publishMessage('off')">关</button>
+        <button onclick="generateLineChart()">生成折线图</button>
+    </div>
+    <canvas id="line-chart"></canvas> <!-- 用于显示折线图的Canvas -->
 </body>
 </html>

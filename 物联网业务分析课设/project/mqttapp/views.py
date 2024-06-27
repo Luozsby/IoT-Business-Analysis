@@ -7,14 +7,6 @@ from .models import SensorData
 def index(request):
     return HttpResponse('欢迎使用')
 
-
-def user_list(request):
-    return render(request,'user_list.html')
-
-def user_add(request):
-    return render(request,'user_add.html')
-
-
 def login(request):
     if request.method=="GET":
         return render(request,"login.html")
@@ -24,19 +16,9 @@ def login(request):
     # 在这里可以对用户名和密码进行进一步的验证或处理
         return redirect('http://127.0.0.1:8000/info/list')
     elif UserInfo.objects.filter(name=username, password=password).exists():
-        return HttpResponse('欢迎使用')
+        return redirect('http://127.0.0.1:8000/sensor_data')
         
     return render(request,'login.html',{'error_msg':'用户名或密码错误'}) 
- 
-# def orm(request):
-
-#     Deprtment.objects.create(title='销售部')
-#     Deprtment.objects.create(title='IT部')
-#     Deprtment.objects.create(title='运营部')
-#     data_list=Deprtment.objects.all()
-#     print(data_list)
-    
-#     return HttpResponse('成功')
 
 
 def info_list(request):
@@ -62,7 +44,6 @@ def info_add(request):
     return redirect('http://127.0.0.1:8000/info/list')
   
 
-
 def info_delete(request):
     nid=request.GET.get('nid')
     UserInfo.objects.filter(id=nid).delete()
@@ -70,7 +51,7 @@ def info_delete(request):
 
 
 def sensor_data(request):
-    data = SensorData.objects.all().order_by('-timestamp')
+    data = SensorData.objects.all().order_by('-timestamp')[:2]
     return render(request, 'sensor_data.html', {'data': data})
 
 
@@ -92,3 +73,30 @@ def mqtt_publish(request):
             return JsonResponse({'error': str(e)}, status=400)
     else:
         return JsonResponse({'error': '仅支持 POST 请求'}, status=405)
+    
+
+
+from django.http import JsonResponse
+from mqttapp.models import SensorData
+
+def get_sensor_data(request):
+    data = SensorData.objects.order_by('-timestamp')[:1]
+    response_data = [
+        {
+            'timestamp': entry.timestamp,
+            'temperature': entry.temperature,
+            'humidity': entry.humidity
+        }
+        for entry in data
+    ]
+    return JsonResponse(response_data, safe=False)
+
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import SensorData
+
+def get_all_sensor_data(request):
+    sensor_data = SensorData.objects.all().order_by('timestamp')  # 获取所有传感器数据，按时间戳排序
+    data = list(sensor_data.values())  # 将查询集转换为字典列表
+    return JsonResponse(data, safe=False)

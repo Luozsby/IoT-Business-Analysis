@@ -22,13 +22,8 @@ from mqttapp import views
 urlpatterns = [
     # path("admin/", admin.site.urls),
     path('index/',views.index),
-    path('user/list/',views.user_list),
-    path('user/add/',views.user_add),
 
     path('login/',views.login),
-
-
-    # path('orm/',views.orm),
 
     #用户列表
     path('info/list',views.info_list),
@@ -41,6 +36,9 @@ urlpatterns = [
 
     #数据
     path('sensor_data/', views.sensor_data),
-    path('mqtt_publish/', views.mqtt_publish, name='mqtt_publish'),
+    path('mqtt_publish/', views.mqtt_publish),
+
+    path('get_sensor_data/', views.get_sensor_data, name='get_sensor_data'),
 
 ]
+
